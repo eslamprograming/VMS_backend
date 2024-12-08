@@ -35,6 +35,12 @@ namespace VMS.Controllers
             var result = await _productService.GetAllProductInCategory(Category_Id);
             return Ok(result);
         }
+        [HttpGet("GetAllProduct")]
+        public async Task<IActionResult> GetAllProduct()
+        {
+            var result = await _productService.GetAllProduct();
+            return Ok(result);
+        }
         [HttpGet("GetProduct")]
         public async Task<IActionResult> GetProduct(int Product_Id)
         {

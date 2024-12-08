@@ -129,6 +129,31 @@ namespace DAL.Repo
             }
         }
 
+        public async Task<Response<Product>> GetAllProduct()
+        {
+            try
+            {
+                var result = await db.Products.ToListAsync();
+
+                return new Response<Product>()
+                {
+                    success = true,
+                    statuscode = "200",
+                    values = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<Product>()
+                {
+                    success = false,
+                    statuscode = "500"
+                    ,
+                    message = ex.Message
+                };
+            }
+        }
+
         public async Task<Response<Product>> GetAllProductInCategory(int Category_Id)
         {
             try

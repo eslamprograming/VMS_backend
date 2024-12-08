@@ -49,6 +49,13 @@ namespace BLL.Service
             return result;
         }
 
+        public async Task<Response<Product>> GetAllProduct()
+        {
+
+            var result = await productRepo.GetAllProduct();
+            return result;
+        }
+
         public async Task<Response<Product>> GetAllProductInCategory(int Category_Id)
         {
             var result = await productRepo.GetAllProductInCategory(Category_Id);
