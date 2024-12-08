@@ -28,13 +28,24 @@ namespace BLL.Service
 
         public async Task<Response<Product>> CreateProduct(ProductVM productVM)
         {
-            var result= await productRepo.CreateProduct(productVM);
+            Product p = new Product();
+            p.Name = productVM.Name;
+            p.Photo = await CloudinaryHelper.UploadImageAsync(productVM.Photho);
+            p.Description = productVM.Description;
+            p.Price = productVM.Price;
+            p.ProductAmount = productVM.ProductAmount;
+            //p.Category.Category_Id = productVM.Category_Id;
+            var result= await productRepo.CreateProduct(p,productVM.Category_Id);
             return result;
         }
 
         public async Task<Response<Product>> DeleteProduct(int Product_Id)
         {
             var result = await productRepo.DeleteProduct(Product_Id);
+            if (result.success)
+            {
+                await CloudinaryHelper.DeleteImageAsync(result.Value.Photo);
+            }
             return result;
         }
 

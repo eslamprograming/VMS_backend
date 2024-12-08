@@ -80,17 +80,13 @@ namespace DAL.Repo
             }
         }
 
-        public async Task<Response<Product>> CreateProduct(ProductVM productVM)
+        public async Task<Response<Product>> CreateProduct(Product productVM,int Cat_Id)
         {
             try
             {
-                Product product = new Product();
-                product.Name = productVM.Name;
-                product.ProductAmount = productVM.ProductAmount;
-                product.Description=productVM.Description;
-                product.Price = productVM.Price;
-                product.Category = await db.Categories.FindAsync(productVM.Category_Id);
-                await db.Products.AddAsync(product);
+               
+                productVM.Category = await db.Categories.FindAsync(Cat_Id);
+                await db.Products.AddAsync(productVM);
                 await db.SaveChangesAsync();
                 return new Response<Product>()
                 {
@@ -118,7 +114,8 @@ namespace DAL.Repo
                 return new Response<Product>()
                 {
                     success = true,
-                    statuscode="200"
+                    statuscode="200",
+                    Value=result
                 };
             }
             catch (Exception ex)

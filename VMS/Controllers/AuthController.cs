@@ -4,6 +4,9 @@ using DAL.ModelVM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using BLL.Helper;
+using CloudinaryDotNet.Actions;
+using CloudinaryDotNet;
 
 namespace VMS.Controllers
 {
@@ -27,6 +30,43 @@ namespace VMS.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
             var result = await _authService.RegisterAsync(registerModel);
             return Ok(result);
+        }
+        [HttpPost]
+        [Route("Upload")]
+        public async Task<IActionResult> UploadImage(IFormFile image)
+        {
+            
+            string imageUrl = await CloudinaryHelper.UploadImageAsync(image);
+
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                return BadRequest("Failed to upload image.");
+            }
+
+            // إرجاع الرابط العام للصورة
+            return Ok(new { imageUrl });
+        }
+
+        [HttpDelete]
+        [Route("Delete")]
+        public async Task<IActionResult> Delete(string publicId)
+        {
+
+            if (string.IsNullOrEmpty(publicId))
+            {
+                return BadRequest("PublicId is required.");
+            }
+
+            bool isDeleted = await CloudinaryHelper.DeleteImageAsync(publicId);
+
+            if (isDeleted)
+            {
+                return Ok("Image deleted successfully.");
+            }
+            else
+            {
+                return BadRequest("Failed to delete image.");
+            }
         }
         [HttpPost]
         [Route("Login")]

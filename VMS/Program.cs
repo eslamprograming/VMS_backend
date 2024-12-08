@@ -1,6 +1,7 @@
 ﻿using BLL.Helper;
 using BLL.IService;
 using BLL.Service;
+using CloudinaryDotNet.Core;
 using DAL.DBContext;
 using DAL.IRepo;
 using DAL.IRepo.IReports;
@@ -10,6 +11,7 @@ using DAL.Repo.Reports;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -46,6 +48,15 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ISupplicerService, SuplierService>();
 builder.Services.AddScoped<IWarehouseService, WarehouseService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
 
 builder.Services.AddAuthentication(options =>
 {
@@ -111,6 +122,13 @@ builder.Services.AddSwaggerGen(c =>
 
 
 var app = builder.Build();
+//app.UseStaticFiles(new StaticFileOptions
+//{
+//    FileProvider = new PhysicalFileProvider(
+//        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
+//    RequestPath = "/static" // يمكنك تغيير المسار حسب الحاجة
+//});
+//app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -118,6 +136,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseExceptionHandler("/error"); // مسار مخصص للأخطاء
@@ -125,7 +144,7 @@ app.UseHsts();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
-app.UseCors();
+app.UseCors("AllowAll"); // تفعيل سياسة CORS
 app.UseAuthorization();
 app.MapControllers();
 
