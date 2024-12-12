@@ -10,7 +10,7 @@ namespace VMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Employee")]
+    [Authorize]
     public class OrderController : ControllerBase
     {
         private readonly IOrderService orderService;
@@ -40,6 +40,12 @@ namespace VMS.Controllers
         public async Task<IActionResult> DeleteOrder(int Order_Id)
         {
             var result = await orderService.DeleteOrderAsync(Order_Id);
+            return Ok(result);
+        }
+        [HttpGet("GetAllOrder")]
+        public async Task<IActionResult> GetAllOrder(int GroupNumber)
+        {
+            var result = await orderService.GetAllOrderAsync(GroupNumber);
             return Ok(result);
         }
     }

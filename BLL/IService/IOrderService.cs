@@ -15,6 +15,6 @@ namespace BLL.IService
         Task<Response<Order>> UpdateOrderAsync(int Order_ID, OrderVM order);
         Task<Response<Order>> DeleteOrderAsync(int Order_Id);
         Task<Response<Order>> GetOrderAsync(int Order_Id);
-        Task<Response<Order>> GetAllOrderAsync();
+        Task<Response<Order>> GetAllOrderAsync(int groupNumber);
     }
 }

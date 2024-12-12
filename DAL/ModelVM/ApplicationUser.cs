@@ -12,6 +12,7 @@ namespace DAL.ModelVM
     {
         public string First_Name { get; set; }
         public string Last_Name { get; set; }
+        public string? photo {  get; set; }
         public ICollection<Order> orders { get; set; }= new List<Order>();
         public ICollection<ProductSuppliy> ProductSuppliys { get; set; } = new List<ProductSuppliy>();
     }

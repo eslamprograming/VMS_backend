@@ -4,6 +4,7 @@ using DAL.IRepo;
 using DAL.ModelVM;
 using DAL.ModelVM.Sherad;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -150,9 +151,38 @@ namespace DAL.Repo
             }
         }
 
-        public Task<Response<Order>> GetAllOrderAsync()
+        public async Task<Response<Order>> GetAllOrderAsync(int groupNumber)
         {
-            throw new NotImplementedException();
+            try
+            {
+                int groupCount = 0;
+                if (groupNumber == 1)
+                {
+                    groupCount = (await db.Orders.CountAsync() / 10) + 1;
+                }
+                var Orders = await db.Orders
+                                        .Skip((groupNumber - 1) * 10)
+                                        .Take(10)
+                                        .ToListAsync();
+
+                return new Response<Order>()
+                {
+                    success = true,
+                    statuscode = "200",
+                    groups = groupCount,
+                    group = groupNumber,
+                    values = Orders
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<Order>()
+                {
+                    success = false,
+                    statuscode = "500",
+                    message = ex.Message,
+                };
+            }
         }
 
         public async Task<Response<Order>> GetOrderAsync(int Order_Id)
@@ -171,8 +201,8 @@ namespace DAL.Repo
 
                         // إعداد المعاملات
                         command.Parameters.AddWithValue("@orderID", Order_Id);
-                       
-                        using(SqlDataReader reader= command.ExecuteReader())
+
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
                             int x = 0;
                             List<OrderDetails> orderDetails1 = new List<OrderDetails>();
@@ -185,11 +215,11 @@ namespace DAL.Repo
                                     order.OrderDate = reader.GetDateTime(1);
                                     order.OrderPrice = reader.GetDecimal(2);
                                     Customer c = new Customer();
-                                    c.Name=reader.GetString(11);
-                                    c.Phone = reader.GetString(12);
+                                    c.Name = reader.GetString(12);
+                                    c.Phone = reader.GetString(13);
                                     order.Customer = c;
                                     ApplicationUser E = new ApplicationUser();
-                                    E.First_Name = reader.GetString(13);
+                                    E.First_Name = reader.GetString(14);
                                     order.Employee = E;
                                 }
                                 Product product = new Product();
@@ -199,18 +229,20 @@ namespace DAL.Repo
                                 product.Product_Id = reader.GetInt32(5);
                                 product.Price = reader.GetDecimal(8);
                                 product.Description = reader.GetString(7);
+                                product.Photo = reader.GetString(11);
 
-                                orderDetails.OrderDetails_Id = reader.GetInt32(14);
+                                orderDetails.OrderDetails_Id = reader.GetInt32(15);
                                 orderDetails.Product = product;
                                 orderDetails.ProductAmount = reader.GetInt32(4);
                                 orderDetails.ProductAmountPrice = reader.GetDecimal(3);
 
                                 orderDetails1.Add(orderDetails);
 
-                                order.orderDetails = orderDetails1;
                                 ++x;
 
                             }
+                            order.orderDetails = orderDetails1;
+
                         }
                     }
                 }
@@ -218,7 +250,7 @@ namespace DAL.Repo
                 {
                     success = true,
                     statuscode = "201",
-                    Value=order
+                    Value = order
                 };
             }
             catch (Exception ex)

@@ -12,6 +12,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using BLL.IService;
+using Microsoft.AspNetCore.Http;
+using DAL.ModelVM.Sherad;
 
 namespace BLL.Service
 {
@@ -159,6 +161,82 @@ namespace BLL.Service
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
                 Username = user.UserName
             };
+        }
+
+        public async Task<Response<ApplicationUser>> UploadPhotoAsync(IFormFile Photo, string User_Id)
+        {
+            try
+            {
+                var User = await _userManager.FindByIdAsync(User_Id);
+
+                var result = await CloudinaryHelper.UploadImageAsync(Photo);
+
+                User.photo = result;
+                await _userManager.UpdateAsync(User);
+                return new Response<ApplicationUser>()
+                {
+                    success = true,
+                    statuscode = "200",
+                    Value = User
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<ApplicationUser>()
+                {
+                    success = false,
+                    statuscode = "500",
+                    message = ex.Message
+                };
+            }
+        }
+
+        public async Task<Response<ApplicationUser>> DeletePhotoAsync(string User_Id)
+        {
+            try
+            {
+                var User = await _userManager.FindByIdAsync(User_Id);
+
+                var result = await CloudinaryHelper.DeleteImageAsync(User.photo);
+
+                User.photo = null;
+                await _userManager.UpdateAsync(User);
+                return new Response<ApplicationUser>()
+                {
+                    success = true,
+                    statuscode = "200",
+                    Value = User
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<ApplicationUser>()
+                {
+                    success = false,
+                    statuscode = "500",
+                    message = ex.Message
+                };
+            }
+        }
+
+        public async Task<Response<ApplicationUser>> UpdatePhotoAsync(IFormFile Photo, string User_Id)
+        {
+            try
+            {
+                var resultdelete = await DeletePhotoAsync(User_Id);
+
+                var result = await UploadPhotoAsync(Photo, User_Id);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return new Response<ApplicationUser>()
+                {
+                    success = false,
+                    statuscode = "500",
+                    message = ex.Message
+                };
+            }
         }
     }
 }

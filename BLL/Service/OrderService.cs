@@ -44,9 +44,10 @@ namespace BLL.Service
             return result;
         }
 
-        public Task<Response<Order>> GetAllOrderAsync()
+        public async Task<Response<Order>> GetAllOrderAsync(int groupNumber)
         {
-            throw new NotImplementedException();
+            var result = await orderRepo.GetAllOrderAsync(groupNumber);
+            return result;
         }
 
         public async Task<Response<Order>> GetOrderAsync(int Order_Id)
