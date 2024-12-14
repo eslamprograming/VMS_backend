@@ -15,6 +15,7 @@ namespace DAL.IRepo
         Task<Response<Customer>> UpdateCustomerasync(int CustomerId,CustomerVM customerVM);
         Task<Response<Customer>> DeleteCustomerasync(int CustomerId);
         Task<Response<Customer>> GetCustomerAsync(int CustomerId);
+        Task<Response<Customer>> GetCustomerbyphoneAsync(string phoneNumber);
         Task<Response<Customer>> GetALLCustomerAsync(int groupNumber);
 
     }

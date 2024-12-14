@@ -225,6 +225,8 @@ namespace DAL.Repo
                             {
                                 Product product = new Product()
                                 {
+                                    Product_Id = reader.GetInt32(reader.GetOrdinal("Product_Id")),
+                                    Photo = reader["Photo"].ToString(),
                                     Name = reader["Name"].ToString(),
                                     Price = reader.GetDecimal(reader.GetOrdinal("Price")),
                                     Description = reader["Description"].ToString(),

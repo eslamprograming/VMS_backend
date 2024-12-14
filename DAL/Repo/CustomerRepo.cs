@@ -25,9 +25,22 @@ namespace DAL.Repo
         {
             try
             {
+                var result = db.Customers.Where(n => n.Phone == customerVM.Phone).ToListAsync();
+
+                if (result != null)
+                {
+                    return new Response<Customer>()
+                    {
+                        success = false,
+                        statuscode = "400",
+                        message = "هذا التليفون موجود !"
+                    };
+                }
+
                 Customer customer=new Customer();
                 customer.Name = customerVM.Name;
                 customer.Phone=customerVM.Phone;
+                
                 await db.Customers.AddAsync(customer);
                 await db.SaveChangesAsync();
 
@@ -129,7 +142,28 @@ namespace DAL.Repo
                 };
             }
         }
-
+        public async Task<Response<Customer>> GetCustomerbyphoneAsync(string phoneNumber)
+        {
+            try
+            {
+                var Customer = await db.Customers.Where(n=>n.Phone==phoneNumber).ToListAsync();
+                return new Response<Customer>()
+                {
+                    success = true,
+                    statuscode = "200",
+                    values = Customer
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<Customer>()
+                {
+                    success = false,
+                    statuscode = "500",
+                    message = ex.Message,
+                };
+            }
+        }
         public async Task<Response<Customer>> UpdateCustomerasync(int CustomerId, CustomerVM customerVM)
         {
             try

@@ -47,5 +47,11 @@ namespace VMS.Controllers
             var result = await customerRepo.GetCustomerAsync(Customer_Id);
             return Ok(result);
         }
+        [HttpGet("GetCustomerByPhone")]
+        public async Task<IActionResult> GetCustomerByPhone(string phone)
+        {
+            var result = await customerRepo.GetCustomerbyphoneAsync(phone);
+            return Ok(result);
+        }
     }
 }
